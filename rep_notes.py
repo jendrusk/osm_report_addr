@@ -2,6 +2,7 @@
 
 import psycopg2
 import smtplib
+import re
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -28,7 +29,7 @@ def get_rep_addr_street_n_place():
 def post_comment(rep, comment):
     chgs = set([x[1] for x in rep])
     for ch in chgs:
-        if unthrusted(ch):
+        if not thrusted(ch):
             oapi.ChangesetComment(ch, comment)
     oapi.flush()
 
@@ -60,11 +61,30 @@ def create_changesets_html(chns):
         resp.append(R'<a href="http://osm.org/changeset/{chn}">  {chn}</a>'.format(chn=chn))
     return "<br />\n".join(resp)
 
+def thrusted_user(changeset):
+    usr = changeset["user"]
+    if usr in th_usr:
+        return True
+    else:
+        return False
 
-def unthrusted(changeset):
+def thrusted_app(changeset):
+    app = changeset["tag"]["created_by"]
+    check = [re.compile(a).match(app) for a in th_app ]
+    if True in check:
+        return True
+    else:
+        return False
+
+
+def thrusted(chs):
     """Funkcja sprawdzająca czy changeset pochodzi z edytora (true) czy innej aplikacji (false), np streetComplete"""
     #trzeba dopisać - w kodzie już wpięte
-    return True
+    changeset = oapi.ChangesetGet(chs)
+    if thrusted_user(changeset) and thrusted_app(changeset):
+        return True
+    else:
+        return False
 
 def create_mail_content(rep,notes):
     items_count = len(rep)
@@ -118,9 +138,9 @@ def rep_nostreet():
     send_mail(mail_content=mail_content)
 
 
-# rep_nostreet()
+rep_nostreet()
 
-post_comment(rep_test,nostreet_chngeset_comment)
+# post_comment(rep_test,nostreet_chngeset_comment)
 
 
 
