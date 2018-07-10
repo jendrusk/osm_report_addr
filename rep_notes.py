@@ -5,13 +5,14 @@
 import re
 import psycopg2
 import config
+import query
 
 
-def get_addr_rep():
+def get_addr_rep(): # TODO:Zastanawiam się czy nie oprzeć tego o OverpassAPI
     """Pobiera raport z bazy"""
     with psycopg2.connect(config.conn_str) as conn:
         with conn.cursor() as cur:
-            cur.execute(config.rep_street_sql)
+            cur.execute(query.rep_street_sql)
             dbres = cur.fetchall()
     return dbres
 
@@ -43,6 +44,20 @@ def create_comment(feat):  # pylint: disable=W0613
     pass
 
 
+def damaged_now():
+    """Pobiera z OSM poprzednią wersję obiektu i sprawdza czy uszkodzenie powstało w wyniku tego changesetu"""
+    return object_edited() and object_wasValid()
+
+def object_edited(obj):
+    """Sprawdza czy dane adresowe były edytowane w ramach tego changesetu"""
+    pass
+
+def object_wasValid():
+    """Sprawdza czy w poprzedniej wersji obiektu dane adresowe były poprawne"""
+    pass
+
+
+
 def post_comment(feat, comment):  # pylint: disable=W0613
     """Wysyła komentarz do OSM"""
     pass
@@ -60,5 +75,5 @@ def rep_nostreet():
             comm = create_comment(feat)  # pylint: disable=E1111
             post_comment(feat, comm)
 
-
+### START ###
 rep_nostreet()
