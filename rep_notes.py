@@ -2,7 +2,7 @@
 
 import psycopg2
 import re
-from config import *
+from conf import *
 
 
 def get_addr_rep():
