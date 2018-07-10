@@ -47,12 +47,14 @@ def create_comment(feat):
 
 def post_comment(feat, comment):
     """Wysyła komentarz do OSM"""
-    oapi.ChangesetComment(feat[1], comment)
-    oapi.flush()
+    pass
+    # oapi.ChangesetComment(feat[1], comment)
+    # oapi.flush()
 
 def rep_nostreet():
     """Główna pętla aplikacji"""
     rep = get_addr_rep()
+    # może już tu trzeba odfiltrować zaufanych a dopiero później po nich iterować?
     for feat in rep:
         if not thrusted(feat[1]):
             comm = create_comment(feat)
