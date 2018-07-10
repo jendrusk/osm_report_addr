@@ -14,7 +14,7 @@ def get_addr_rep():
     return dbres
 
 
-def thrusted_user(changeset):
+def trusted_user(changeset):
     """Sprawdza czy user jest na liście zaufanych"""
     usr = changeset["user"]
     if usr in th_usr:
@@ -22,7 +22,7 @@ def thrusted_user(changeset):
     else:
         return False
 
-def thrusted_app(changeset):
+def trusted_app(changeset):
     """Sprawdza czy aplikacja jest na liście zaufanych"""
     app = changeset["tag"]["created_by"]
     check = [re.compile(a).match(app) for a in th_app ]
@@ -32,10 +32,10 @@ def thrusted_app(changeset):
         return False
 
 
-def thrusted(chs):
+def trusted(chs):
     """Pobiera dane changesetu i sprawdza listy zaufanych aplikacji i userów"""
     changeset = oapi.ChangesetGet(chs)
-    if thrusted_user(changeset) and thrusted_app(changeset):
+    if trusted_user(changeset) and trusted_app(changeset):
         return True
     else:
         return False
@@ -56,7 +56,7 @@ def rep_nostreet():
     rep = get_addr_rep()
     # może już tu trzeba odfiltrować zaufanych a dopiero później po nich iterować?
     for feat in rep:
-        if not thrusted(feat[1]):
+        if not trusted(feat[1]):
             comm = create_comment(feat)
             post_comment(feat, comm)
 
