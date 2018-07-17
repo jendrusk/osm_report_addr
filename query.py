@@ -3,6 +3,7 @@ rep_street_sql = """
 select  
      tags -> 'osm_user' as user, 
      tags -> 'osm_changeset' as changeset,
+     osm_id,
        case
          when po."addr:city" is not null and po."addr:place" is not null and po."addr:street" is not null then 'c_p_s'::text
          when po."addr:city" is null and po."addr:place" is not null and po."addr:street" is not null then 'nc_p_s'::text
@@ -12,7 +13,7 @@ select
          when po."addr:city" is null and po."addr:place" is null and po."addr:street" is null then 'nc_np_ns'::text
          else null::text
        end as reason,
-     'node/'||osm_id as url,
+     'node' as type,
      tags -> 'osm_version' as version,
      ST_Y(ST_Transform(way,4326)) as lat, 
      ST_X(ST_Transform(way,4326)) as lon 
@@ -32,6 +33,7 @@ union all
    select  
      tags -> 'osm_user' as user, 
      tags -> 'osm_changeset' as changeset,
+     osm_id,
        case
          when po."addr:city" is not null and po."addr:place" is not null and po."addr:street" is not null then 'c_p_s'::text
          when po."addr:city" is null and po."addr:place" is not null and po."addr:street" is not null then 'nc_p_s'::text
@@ -43,10 +45,10 @@ union all
        end
      as reason,
      case
-         when osm_id > 0 then 'way/'||osm_id
-         when osm_id < 0 then 'relation/'||abs(osm_id)
+         when osm_id > 0 then 'way'
+         when osm_id < 0 then 'relation'
        end
-     as url,
+     as type,
      tags -> 'osm_version' as version,
      ST_Y(ST_Transform(ST_Centroid(way),4326)) as lat, 
      ST_X(ST_Transform(ST_Centroid(way),4326)) as lon 
