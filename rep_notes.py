@@ -46,9 +46,59 @@ def trusted(feat):
     return trusted_user(changeset) and trusted_app(changeset)
 
 
-def create_comment(feat):  # pylint: disable=W0613
-    """Tworzy konentarz na podstawie danych z raportu"""
-    pass
+def group_by_changeset(rep):
+    """Grupuje liste błędów po changesecie"""
+    res = []
+    chgs_list = set([x["changeset"] for x in rep])
+    for chgs in chgs_list:
+        chgs_item = dict()
+        reas_list = set([x["reason"] for x in rep if x["changeset"] == chgs ])
+        for reas in reas_list:
+            feat_list = set([x["reason"] for x in rep if x["changeset"] == chgs and x["reason"] ==reas ])
+    #TODO: Dokończyć
+
+# powinno zwrócić coś takiego:
+# [
+# {changeset : 1,
+# user : ja,
+# thrusted : true,
+# reasons : [
+# 	{reason : aa
+# 	items : [
+# 		{id: 1,
+# 		type: node},
+# 		{id:2,
+# 		type: way},
+# 		{id:3,
+# 		type: relation}]},
+# 	{reason : bb,
+# 	items : [5,6,7]}]},
+# {changeset : 2,
+# user : ty,
+# thrusted : true,
+# reasons : [
+# 	{reason : aa
+# 	items : [
+# 		{id: 1,
+# 		type: node},
+# 		{id:2,
+# 		type: way},
+# 		{id:3,
+# 		type: relation}]},
+# 	{reason : bb,
+# 	items : [5,6,7]}]}]
+
+
+def create_comments(rep):  # pylint: disable=W0613
+    """Grupuje listę błędów po changesecie i dodaje komentarze na podstawie danych z raportu"""
+    rep_group = group_by_changeset(rep)
+    #TODO:Dokończyć
+
+
+
+
+
+
 
 
 def get_Object(feat, back):
@@ -103,14 +153,25 @@ def post_comment(feat, comment):  # pylint: disable=W0613
     # config.oapi.ChangesetComment(feat[1], comment)
     # config.oapi.flush()
 
+def validate_report(rep):
+    res = []
+    for feat in rep:
+        feat["trusted"] = trusted(feat)
+        feat["damaged_now"] = damaged_now(feat)
+        res.append(feat)
+    return res
 
 def rep_nostreet():
     """Główna pętla aplikacji"""
+    # workflow:
+    # 1. pobrać raport z bazy
+    # 2. sprawdzić czy user lub aplikacja nie jest zaufana oraz czy błąd powstał w tym changesecie
+    # 3. dla listy sprawdzonych wygenerować treści raportów (grup by changeset)
+    # 4. jak dostaniemy listę to możemy na jej podstawie przesłać komentarze lub wygenerować raport do maila lub www
     rep = get_addr_rep()
-    for feat in rep:
-        if not trusted(feat) and damaged_now(feat):
-            comm = create_comment(feat)  # pylint: disable=E1111
-            post_comment(feat, comm)
+    rep_val = validate_report(rep)
+    rep_val_com = create_comments(rep_val)
+
 
 ### START ###
 rep_nostreet()
