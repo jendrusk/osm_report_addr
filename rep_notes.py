@@ -81,21 +81,21 @@ def create_comments(rep):  # pylint: disable=W0613
     #TODO:Dokończyć
 
 
-def get_Object(feat, back=0):
+def get_Object(feat, ver):
     """Pobiera obiekt dla rekordu raportu (feat) z możliwością cofnięcia się o x wersji (back)"""
     if feat["type"] == "node":
-        return config.oapi.NodeGet(feat["osm_id"], int(feat["version"]) - back)
+        return config.oapi.NodeGet(feat["osm_id"], ver)
     elif feat["type"] == "way":
-        return config.oapi.WayGet(feat["osm_id"], int(feat["version"]) - back)
+        return config.oapi.WayGet(feat["osm_id"], ver)
     elif feat["type"] == "relation":
-        return config.oapi.RelationGet(feat["osm_id"], int(feat["version"]) - back)
+        return config.oapi.RelationGet(feat["osm_id"], ver)
 
 
 def damaged_now(feat):
     """Pobiera z OSM poprzednią wersję obiektu i sprawdza czy uszkodzenie powstało w wyniku tego changesetu"""
     if int(feat["version"]) > 1:
-        obj_now = get_Object(feat)
-        obj_before = get_Object(feat,back=1)
+        obj_now = get_Object(feat, int(feat["version"]))
+        obj_before = get_Object(feat,int(feat["version"])-1)
         return addr_edited(obj_now, obj_before) and addr_Valid(obj_before)
     else:
         return True
