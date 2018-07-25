@@ -49,73 +49,53 @@ def trusted(feat):
 def group_by_changeset(rep):
     """Grupuje liste błędów po changesecie"""
     res = []
-    chgs_list = set([x["changeset"] for x in rep])
-    for chgs in chgs_list:
-        chgs_item = dict()
-        reas_list = set([x["reason"] for x in rep if x["changeset"] == chgs ])
-        for reas in reas_list:
-            feat_list = set([x["reason"] for x in rep if x["changeset"] == chgs and x["reason"] ==reas ])
-    #TODO: Dokończyć
-
-# powinno zwrócić coś takiego:
-# [
-# {changeset : 1,
-# user : ja,
-# thrusted : true,
-# reasons : [
-# 	{reason : aa
-# 	items : [
-# 		{id: 1,
-# 		type: node},
-# 		{id:2,
-# 		type: way},
-# 		{id:3,
-# 		type: relation}]},
-# 	{reason : bb,
-# 	items : [5,6,7]}]},
-# {changeset : 2,
-# user : ty,
-# thrusted : true,
-# reasons : [
-# 	{reason : aa
-# 	items : [
-# 		{id: 1,
-# 		type: node},
-# 		{id:2,
-# 		type: way},
-# 		{id:3,
-# 		type: relation}]},
-# 	{reason : bb,
-# 	items : [5,6,7]}]}]
+    broken = [x for x in rep if not x["trusted"] and x["damaged_now"] ]
+    chgs_set = set([x["changeset"] for x in broken])
+    for chgs in chgs_set:
+        res_chgs = dict()
+        chgs_data = [x for x in broken if x["changeset"] == chgs]
+        res_chgs["changeset"] = chgs_data[0]["changeset"]
+        res_chgs["user"] = chgs_data[0]["user"]
+        res_chgs["reasons"] = list()
+        reas_set = set([x["reason"] for x in chgs_data])
+        for reas in reas_set:
+            res_reas_d = dict()
+            res_reas_d["reason"] = reas
+            res_reas_d["items"] = list()
+            items_list = [x for x in chgs_data if x["reason"] == reas]
+            for item in items_list:
+                item_dict = {
+                    "osm_id" : item["osm_id"],
+                    "type" : item["type"]
+                }
+                res_reas_d["items"].append(item_dict)
+            res_chgs["reasons"].append(res_reas_d)
+        res.append(res_chgs)
+    return res
 
 
 def create_comments(rep):  # pylint: disable=W0613
     """Grupuje listę błędów po changesecie i dodaje komentarze na podstawie danych z raportu"""
     rep_group = group_by_changeset(rep)
+    a=1
     #TODO:Dokończyć
 
 
-
-
-
-
-
-
-def get_Object(feat, back):
+def get_Object(feat, back=0):
     """Pobiera obiekt dla rekordu raportu (feat) z możliwością cofnięcia się o x wersji (back)"""
-    if feat[3] == "node":
-        return config.oapi.NodeGet(feat["osm_id"], feat["version"] - back)
-    elif feat[3] == "way":
-        return config.oapi.WayGet(feat["osm_id"], feat["version"] - back)
-    elif feat[3] == "relation":
-        return config.oapi.RelationGet(feat["osm_id"], feat["version"] - back)
+    if feat["type"] == "node":
+        return config.oapi.NodeGet(feat["osm_id"], int(feat["version"]) - back)
+    elif feat["type"] == "way":
+        return config.oapi.WayGet(feat["osm_id"], int(feat["version"]) - back)
+    elif feat["type"] == "relation":
+        return config.oapi.RelationGet(feat["osm_id"], int(feat["version"]) - back)
 
 
 def damaged_now(feat):
     """Pobiera z OSM poprzednią wersję obiektu i sprawdza czy uszkodzenie powstało w wyniku tego changesetu"""
-    if feat[4] > 1:
-        obj_now = get_Object(feat,0)
-        obj_before = get_Object(feat,1)
+    if int(feat["version"]) > 1:
+        obj_now = get_Object(feat)
+        obj_before = get_Object(feat,back=1)
         return addr_edited(obj_now, obj_before) and addr_Valid(obj_before)
     else:
         return True
@@ -123,25 +103,29 @@ def damaged_now(feat):
 
 def addr_edited(obj_now, obj_before):
     """Sprawdza czy dane adresowe były edytowane w ramach tego changesetu"""
+
+    now_tag_ = obj_now.get("tag")
+    before_tag_ = obj_before.get("tag")
     return (
-        obj_now["tag"]["addr:city"] != obj_before["tag"]["addr:city"] and
-        obj_now["tag"]["addr:place"] != obj_before["tag"]["addr:place"] and
-        obj_now["tag"]["addr:street"] != obj_before["tag"]["addr:street"] and
-        obj_now["tag"]["addr:housenumber"] != obj_before["tag"]["addr:housenumber"])
+        now_tag_.get("addr:city") != before_tag_.get("addr:city") and
+        now_tag_.get("addr:place") != before_tag_.get("addr:place") and
+        now_tag_.get("addr:street") != before_tag_.get("addr:street") and
+        now_tag_.get("addr:housenumber") != before_tag_.get("addr:housenumber"))
 
 def addr_Valid(obj):
     """Sprawdza czy dane adresowe są poprawne"""
+    obj_tag_ = obj.get("tag")
     return (
         (
-            obj["tag"]["addr:city"] is not None and
-            obj["tag"]["addr:place"] is None and
-            obj["tag"]["addr:street"] is not None and
-            obj["tag"]["addr:housenumber"] is not None
+            obj_tag_.get("addr:city") is not None and
+            obj_tag_.get("addr:place") is None and
+            obj_tag_.get("addr:street") is not None and
+            obj_tag_.get("addr:housenumber") is not None
         ) or (
-            obj["tag"]["addr:city"] is None and
-            obj["tag"]["addr:place"] is not None and
-            obj["tag"]["addr:street"] is None and
-            obj["tag"]["addr:housenumber"] is not None
+            obj_tag_.get("addr:city") is None and
+            obj_tag_.get("addr:place") is not None and
+            obj_tag_.get("addr:street") is None and
+            obj_tag_.get("addr:housenumber") is not None
         )
     )
 
