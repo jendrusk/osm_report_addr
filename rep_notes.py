@@ -6,6 +6,7 @@ import re
 import psycopg2
 import config
 import query
+import locdb
 
 
 def get_addr_rep(): # TODO:Zastanawiam się czy nie oprzeć tego o OverpassAPI
@@ -130,7 +131,6 @@ def addr_Valid(obj):
     )
 
 
-
 def post_comment(feat, comment):  # pylint: disable=W0613
     """Wysyła komentarz do OSM"""
     pass
@@ -150,11 +150,10 @@ def rep_nostreet():
     # workflow:
     # 1. pobrać raport z bazy
     # 2. sprawdzić czy user lub aplikacja nie jest zaufana oraz czy błąd powstał w tym changesecie
-    # 3. dla listy sprawdzonych wygenerować treści raportów (grup by changeset)
-    # 4. jak dostaniemy listę to możemy na jej podstawie przesłać komentarze lub wygenerować raport do maila lub www
+    # 3. sprawdzone dodać do bazy
     rep = get_addr_rep()
     rep_val = validate_report(rep)
-    rep_val_com = create_comments(rep_val)
+    locdb.insert(rep_val)
 
 
 ### START ###
