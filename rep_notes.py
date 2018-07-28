@@ -40,11 +40,14 @@ def trusted_app(changeset):
     return True in check
 
 
-def trusted(feat):
+def fill_trusted(feat):
     """Pobiera dane changesetu i sprawdza listy zaufanych aplikacji i userów"""
     changeset = config.oapi.ChangesetGet(feat["changeset"])
+    feat["trusted_user"] = trusted_user(changeset)
+    feat["trusted_app"] = trusted_app(changeset)
+    feat["app"] = changeset["tag"]["created_by"]
 
-    return trusted_user(changeset) and trusted_app(changeset)
+    return feat
 
 
 def group_by_changeset(rep):
@@ -140,7 +143,7 @@ def post_comment(feat, comment):  # pylint: disable=W0613
 def validate_report(rep):
     res = []
     for feat in rep:
-        feat["trusted"] = trusted(feat)
+        feat = fill_trusted(feat)
         feat["damaged_now"] = damaged_now(feat)
         res.append(feat)
     return res

@@ -47,10 +47,15 @@
           {% endif %}
           {% if colname == "checks" %}
           <td>
-            {% if row["trusted"] == True %}
-                <p class="text-success">Użytkownik lub aplikacja znajdują się na liście zaufanych</p>
+            {% if row["trusted_user"] == True %}
+                <p class="text-success">Użytkownik znajduje się na liście zaufanych</p>
             {% else %}
-                <p class="text-danger">Ani użytkownik ani aplikacja nie znajdują się na liście zaufanych</p>
+                <p class="text-danger">Użytkownik nie znajduje się na liście zaufanych</p>
+            {% endif %}
+            {% if row["trusted_app"] == True %}
+                <p class="text-success">Aplikacja {{ row["app"] }} znajduje się na liście zaufanych</p>
+            {% else %}
+                <p class="text-danger">Aplikacja {{ row["app"] }} nie znajduje się na liście zaufanych</p>
             {% endif %}
             {% if row["damaged_now"] == True %}
                 <p class="text-danger">Uszkodzenie powstało w tym changesecie</p>

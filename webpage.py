@@ -4,7 +4,7 @@ import config
 app = Flask(__name__)
 
 @app.route('/')
-def hello_world():
+def main_list():
     htdata = locdb.select_all(limit=100)
     header = "Ostatnie 100 changesetów z uszkodzonymi adresami"
     colnames = ["osm_id", "osm_user", "osm_changeset", "reason", "checks"]
@@ -17,6 +17,9 @@ def hello_world():
                            reason_dict=config.reason_dict)
 
 
+@app.route('/changeset/<chgs_id>')
+def changeset_report(chgs_id):
+    htdata = locdb.select_changeset(chgs_id)
 
 
 

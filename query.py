@@ -3,6 +3,7 @@
 # select
 #      tags -> 'osm_user' as user,
 #      tags -> 'osm_changeset' as changeset,
+#      tags -> 'osm_timestamp' as created,
 #      osm_id,
 #        case
 #          when po."addr:city" is not null and po."addr:place" is not null and po."addr:street" is not null then 'c_p_s'::text
@@ -33,6 +34,7 @@
 #    select
 #      tags -> 'osm_user' as user,
 #      tags -> 'osm_changeset' as changeset,
+#      tags -> 'osm_timestamp' as created,
 #      osm_id,
 #        case
 #          when po."addr:city" is not null and po."addr:place" is not null and po."addr:street" is not null then 'c_p_s'::text
