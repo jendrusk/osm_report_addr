@@ -20,6 +20,11 @@ def main_list():
 @app.route('/changeset/<chgs_id>')
 def changeset_report(chgs_id):
     htdata = locdb.select_changeset(chgs_id)
+    colnames = ["osm_id", "reason", "checks"]
+    return render_template("changeset.html",
+                           rows=htdata,
+                           colnames=colnames,
+                           reason_dict=config.reason_dict)
 
 
 

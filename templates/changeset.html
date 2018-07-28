@@ -2,16 +2,40 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Broken addresses reporter</title>
+    <title>Broken changeset</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
-<div class="container">
-  <h2>{{ header }}</h2>
-  <table class="table table-condensed">
+<div class="well">
+    <h4>Changeset numer <a href="http://osm.org/changeset/{{rows[0]["osm_changeset"]}}">{{rows[0]["osm_changeset"]}}</a>
+        utworzony {{rows[0]["created"]}} </h4>
+            {% if rows[0]["trusted_user"] == True %}
+                <h4 class="text-success">Użytkownik <a href="http://osm.org/user/{{ rows[0]["osm_user"] }}">{{ rows[0]["osm_user"]}}</a> znajduje się na liście zaufanych</h4>
+            {% else %}
+                <h4 class="text-danger">Użytkownik <a href="http://osm.org/user/{{ rows[0]["osm_user"] }}">{{ rows[0]["osm_user"]}}</a> nie znajduje się na liście zaufanych</h4>
+            {% endif %}
+            {% if rows[0]["trusted_app"] == True %}
+                <h4 class="text-success">Aplikacja {{ rows[0]["app"] }} znajduje się na liście zaufanych</h4>
+            {% else %}
+                <h4 class="text-danger">Aplikacja {{ rows[0]["app"] }} nie znajduje się na liście zaufanych</h4>
+            {% endif %}
+            {% if rows[0]["damaged_now"] == True %}
+                <h4 class="text-danger">Uszkodzenie powstało w tym changesecie</h4>
+            {% else %}
+                <h4 class="text-success">Uszkodzenie nie powstało w tym changesecie</h4>
+            {% endif %}
+            {% if rows[0]["trusted_user"] == True or rows[0]["trusted_app"] == True or rows[0]["damaged_now"] == False %}
+            <h3 class="text-success">Changeset nie zostanie zakomentowany</h3>
+            {% else %}
+            <h3 class="text-danger">Ten changeset otrzyma komentarz</h3>
+            {% endif %}
+</div>
+<div class="well">
+    <h3>Wykryte obiekty</h3>
+<table class="table table-condensed">
     <thead>
       <tr>
           {% for colname in colnames %}
@@ -50,16 +74,6 @@
           {% endif %}
           {% if colname == "checks" %}
           <td>
-            {% if row["trusted_user"] == True %}
-                <p class="text-success">Użytkownik znajduje się na liście zaufanych</p>
-            {% else %}
-                <p class="text-danger">Użytkownik nie znajduje się na liście zaufanych</p>
-            {% endif %}
-            {% if row["trusted_app"] == True %}
-                <p class="text-success">Aplikacja {{ row["app"] }} znajduje się na liście zaufanych</p>
-            {% else %}
-                <p class="text-danger">Aplikacja {{ row["app"] }} nie znajduje się na liście zaufanych</p>
-            {% endif %}
             {% if row["damaged_now"] == True %}
                 <p class="text-danger">Uszkodzenie powstało w tym changesecie</p>
             {% else %}
@@ -74,6 +88,9 @@
     {% endfor %}
     </tbody>
   </table>
+
+
+
 </div>
 </body>
 </html>

@@ -23,7 +23,8 @@ res = cur.fetchall()
 if len(res) == 0:
     cur.execute("""create table broken_objects (
         osm_user text, 
-        osm_changeset bigint, 
+        osm_changeset bigint,
+        created timestamp,
         osm_id bigint, 
         reason text, 
         type text, 
@@ -42,9 +43,9 @@ def insert(rep_val):
     db = get_conn()
     cur = db.cursor()
     sql = """
-    insert into broken_objects (osm_user, osm_changeset, osm_id, reason, type, version, lat, lon, 
+    insert into broken_objects (osm_user, osm_changeset, created, osm_id, reason, type, version, lat, lon, 
       trusted_user, trusted_app, app, damaged_now)
-    values(:user, :changeset, :osm_id, :reason, :type, :version, :lat, :lon, 
+    values(:user, :changeset, :created, :osm_id, :reason, :type, :version, :lat, :lon, 
       :trusted_user, :trusted_app, :app, :damaged_now)
     """
     for feat in rep_val:
@@ -68,7 +69,7 @@ def select_all(limit=0):
 def select_changeset(changeset):
     db = get_conn()
     cur = db.cursor()
-    sql = "select * from broken_objects where changeset = :changeset"
+    sql = "select * from broken_objects where osm_changeset = :changeset"
     cur.execute(sql, {"changeset": changeset})
     res = cur.fetchall()
     db.close()
