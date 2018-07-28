@@ -60,6 +60,42 @@ nostreet_chgs_dict = {
     podaj nazwę miejscowości w tagu addr:place"""
 }
 
+reason_dict = {
+    "c_p_s": {
+        "short": "addr:place oraz addr:city w jednym obiekcie z ulicą",
+        "full": """W przypadku tego obiektu użyłeś równocześnie tagu addr:place oraz addr:city. Dla 
+    miejscowości posiadającej ulice używamy jedynie tagu addr:city - usuń proszę tag addr:place"""
+    },
+    "nc_p_s": {
+        "short": "addr:place oraz addr:street w jednym obiekcie",
+        "full": """W przypadku tego obiektu użyłeś równocześnie tagu addr:place oraz addr:street. Dla 
+    miejscowości posiadającej ulice używamy tagu addr:city - umieść tam nazwę miejscowości a tag addr:place usuń."""
+    },
+    "nc_np_s": {
+        "short": "Brak addr:city w obiekcie z ulicą",
+        "full": """W przypadku tego obiektu nie podałeś nazwy miejscowości. Taki adres będzie ciężko wyszukać 
+    np. w nawigacji. Dodaj proszę nazwę miejscowości w tagu addr:city"""
+    },
+    "c_p_ns": {
+        "short": "addr:city i addr:place w obiekcie bez ulicy",
+        "full": """W przypadku tego obiektu użyłeś równocześnie tagu addr:place oraz addr:city dla 
+         miejscowości nie posiadającej ulic. W takim przypadku używamy jedynie tagu addr:place 
+         - usuń proszę tag addr:city"""
+    },
+    "c_np_ns": {
+        "short": None,
+        "full": """W przypadku obiektu(ów) ({obj}) użyłeś tagu addr:city nie podając addr:street. Jeśli 
+        miejscowość posiada ulice podaj jej nazwę w tagu addr:street, jeśli nie posiada podaj jej nazwę w tagu 
+        addr:place, a tag addr:city usuń."""
+    },
+    "nc_np_ns": {
+        "short": "addr:housenumber bez pozostałych tagów",
+        "full": """W przypadku obiektu(ów) ({obj}) adresy są niepełne - jeśli miejscowość ma ulice podaj jej 
+        nazwę w tagu addr:street oraz nazwę miejscowości w tagu addr:city. Jeśli miejscowość ma numerację chronologiczną
+        podaj nazwę miejscowości w tagu addr:place"""
+    }
+}
+
 
 #Zaufane aplikacje - patern regexp
 th_app = []

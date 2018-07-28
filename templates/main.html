@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Broken addresses reporter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+  <h2>{{ header }}</h2>
+  <table class="table table-condensed">
+    <thead>
+      <tr>
+          {% for colname in colnames %}
+        <th>{{ colname }}</th>
+          {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+    {% for row in rows %}
+      <tr
+          {% if row["trusted"] == True or row["damaged_now"] == False %}
+            class="success"
+          {% else %}
+            class="danger"
+          {% endif %}>
+        {% for colname in colnames %}
+          {% if colname == "osm_user" %}
+          <td><a href="http://osm.org/user/{{ row[colname] }}">{{ row[colname]}}</a></td>
+          {% endif %}
+          {% if colname == "osm_id" %}
+          <td><a href="http://osm.org/browse/{{ row['type'] }}/{{ row['osm_id'] }}">{{ row[colname]}}</a></td>
+          {% endif %}
+          {% if colname == "osm_changeset" %}
+          <td><a href="http://osm.org/changeset/{{ row[colname] }}">{{ row[colname]}}</a></td>
+          {% endif %}
+          {% if colname == "reason" %}
+          <td>
+              <h4>
+                  {{ reason_dict[row[colname]]["short"] }} <br />
+                  <small>{{ reason_dict[row[colname]]["full"] }}</small>
+              </h4>
+          </td>
+          {% endif %}
+          {% if colname == "checks" %}
+          <td>
+            {% if row["trusted"] == True %}
+                <p class="text-success">Użytkownik lub aplikacja znajdują się na liście zaufanych</p>
+            {% else %}
+                <p class="text-danger">Ani użytkownik ani aplikacja nie znajdują się na liście zaufanych</p>
+            {% endif %}
+            {% if row["damaged_now"] == True %}
+                <p class="text-danger">Uszkodzenie powstało w tym changesecie</p>
+            {% else %}
+                <p class="text-success">Uszkodzenie nie powstało w tym changesecie</p>
+            {% endif %}
+
+          </td>
+          {% endif %}
+        {% endfor %}
+
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+</body>
+</html>
