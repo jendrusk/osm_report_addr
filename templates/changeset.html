@@ -9,89 +9,125 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
-<div class="well">
-    <h4>Changeset numer <a href="http://osm.org/changeset/{{rows[0]["osm_changeset"]}}">{{rows[0]["osm_changeset"]}}</a>
-        utworzony {{rows[0]["created"]}} </h4>
-            {% if rows[0]["trusted_user"] == True %}
-                <h4 class="text-success">Użytkownik <a href="http://osm.org/user/{{ rows[0]["osm_user"] }}">{{ rows[0]["osm_user"]}}</a> znajduje się na liście zaufanych</h4>
-            {% else %}
-                <h4 class="text-danger">Użytkownik <a href="http://osm.org/user/{{ rows[0]["osm_user"] }}">{{ rows[0]["osm_user"]}}</a> nie znajduje się na liście zaufanych</h4>
-            {% endif %}
-            {% if rows[0]["trusted_app"] == True %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="well">
+                <h4>Changeset numer <a href="http://osm.org/changeset/{{rows[0][" osm_changeset"]}}">{{rows[0]["osm_changeset"]}}</a>
+                    utworzony {{rows[0]["created"]}} </h4>
+                {% if rows[0]["trusted_user"] == True %}
+                <h4 class="text-success">Użytkownik <a href="http://osm.org/user/{{ rows[0][" osm_user"] }}">{{
+                    rows[0]["osm_user"]}}</a> znajduje się na liście zaufanych</h4>
+                {% else %}
+                <h4 class="text-danger">Użytkownik <a href="http://osm.org/user/{{ rows[0][" osm_user"] }}">{{
+                    rows[0]["osm_user"]}}</a> nie znajduje się na liście zaufanych</h4>
+                {% endif %}
+                {% if rows[0]["trusted_app"] == True %}
                 <h4 class="text-success">Aplikacja {{ rows[0]["app"] }} znajduje się na liście zaufanych</h4>
-            {% else %}
+                {% else %}
                 <h4 class="text-danger">Aplikacja {{ rows[0]["app"] }} nie znajduje się na liście zaufanych</h4>
-            {% endif %}
-            {% if rows[0]["damaged_now"] == True %}
+                {% endif %}
+                {% if rows[0]["damaged_now"] == True %}
                 <h4 class="text-danger">Uszkodzenie powstało w tym changesecie</h4>
-            {% else %}
+                {% else %}
                 <h4 class="text-success">Uszkodzenie nie powstało w tym changesecie</h4>
-            {% endif %}
-            {% if rows[0]["trusted_user"] == True or rows[0]["trusted_app"] == True or rows[0]["damaged_now"] == False %}
-            <h3 class="text-success">Changeset nie zostanie zakomentowany</h3>
-            {% else %}
-            <h3 class="text-danger">Ten changeset otrzyma komentarz</h3>
-            {% endif %}
-</div>
-<div class="well">
-    <h3>Wykryte obiekty</h3>
-    <h4>Użytkownik <a href="http://127.0.0.1:8111/load_object?new_layer=true&relation_members=true&objects={{ all_obj }}">Załaduj do JOSM</a> </h4>
-<table class="table table-condensed">
-    <thead>
-      <tr>
-          {% for colname in colnames %}
-        <th>{{ colname }}</th>
-          {% endfor %}
-      </tr>
-    </thead>
-    <tbody>
-    {% for row in rows %}
-      <tr
-          {% if row["trusted_user"] == True or row["trusted_app"] == True or row["damaged_now"] == False %}
-            class="success"
-          {% else %}
-            class="danger"
-          {% endif %}>
-        {% for colname in colnames %}
-          {% if colname == "osm_user" %}
-          <td><a href="http://osm.org/user/{{ row[colname] }}">{{ row[colname]}}</a></td>
-          {% endif %}
-          {% if colname == "osm_id" %}
-          <td><a href="http://osm.org/browse/{{ row['type'] }}/{{ row['osm_id'] }}">{{ row[colname]}}</a></td>
-          {% endif %}
-          {% if colname == "osm_changeset" %}
-          <td>
-            <a href="http://osm.org/changeset/{{ row[colname] }}">{{ row[colname]}}</a><br />
-            <a href="./changeset/{{ row[colname] }}">((RAPORT))</a>
-          </td>
-          {% endif %}
-          {% if colname == "reason" %}
-          <td>
-              <h4>
-                  {{ reason_dict[row[colname]]["short"] }} <br />
-                  <small>{{ reason_dict[row[colname]]["full"] }}</small>
-              </h4>
-          </td>
-          {% endif %}
-          {% if colname == "checks" %}
-          <td>
-            {% if row["damaged_now"] == True %}
-                <p class="text-danger">Uszkodzenie powstało w tym changesecie</p>
-            {% else %}
-                <p class="text-success">Uszkodzenie nie powstało w tym changesecie</p>
-            {% endif %}
+                {% endif %}
+                {% if rows[0]["trusted_user"] == True or rows[0]["trusted_app"] == True or rows[0]["damaged_now"] ==
+                False
+                %}
+                <h3 class="text-success">Changeset nie zostanie zakomentowany</h3>
+                {% else %}
+                <h3 class="text-danger">Ten changeset otrzyma komentarz</h3>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="well">
+                <table class="table table-condensed">
+                    <thead>
+                    <tr>
+                        <th>Referer</th>
+                        <th>Liczba wizyt</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for visit in visits %}
+                    <tr>
+                        <th>{{visit["referer"]}}</th>
+                        <th>{{visit["count"]}}</th>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="well">
+                <h3>Wykryte obiekty</h3>
+                <h4>Użytkownik <a
+                    href="http://127.0.0.1:8111/load_object?new_layer=true&relation_members=true&objects={{ all_obj }}">Załaduj
+                    do JOSM</a></h4>
+                <table class="table table-condensed">
+                    <thead>
+                    <tr>
+                        {% for colname in colnames %}
+                        <th>{{ colname }}</th>
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in rows %}
+                    <tr
+                        {% if row[
+                    "trusted_user"] == True or row["trusted_app"] == True or row["damaged_now"] == False %}
+                    class="success"
+                    {% else %}
+                    class="danger"
+                    {% endif %}>
+                    {% for colname in colnames %}
+                    {% if colname == "osm_user" %}
+                    <td><a href="http://osm.org/user/{{ row[colname] }}">{{ row[colname]}}</a></td>
+                    {% endif %}
+                    {% if colname == "osm_id" %}
+                    <td><a href="http://osm.org/browse/{{ row['type'] }}/{{ row['osm_id'] }}">{{ row[colname]}}</a></td>
+                    {% endif %}
+                    {% if colname == "osm_changeset" %}
+                    <td>
+                        <a href="http://osm.org/changeset/{{ row[colname] }}">{{ row[colname]}}</a><br/>
+                        <a href="./changeset/{{ row[colname] }}">((RAPORT))</a>
+                    </td>
+                    {% endif %}
+                    {% if colname == "reason" %}
+                    <td>
+                        <h4>
+                            {{ reason_dict[row[colname]]["short"] }} <br/>
+                            <small>{{ reason_dict[row[colname]]["full"] }}</small>
+                        </h4>
+                    </td>
+                    {% endif %}
+                    {% if colname == "checks" %}
+                    <td>
+                        {% if row["damaged_now"] == True %}
+                        <p class="text-danger">Uszkodzenie powstało w tym changesecie</p>
+                        {% else %}
+                        <p class="text-success">Uszkodzenie nie powstało w tym changesecie</p>
+                        {% endif %}
 
-          </td>
-          {% endif %}
-        {% endfor %}
+                    </td>
+                    {% endif %}
+                    {% endfor %}
 
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
 
 
-
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 </html>

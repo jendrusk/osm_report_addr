@@ -10,70 +10,74 @@
 </head>
 <body>
 <div class="container">
-  <h2>{{ header }}</h2>
-  <table class="table table-condensed">
-    <thead>
-      <tr>
-          {% for colname in colnames %}
-        <th>{{ colname }}</th>
-          {% endfor %}
-      </tr>
-    </thead>
-    <tbody>
-    {% for row in rows %}
-      <tr
-          {% if row["trusted_user"] == True or row["trusted_app"] == True or row["damaged_now"] == False %}
-            class="success"
-          {% else %}
-            class="danger"
-          {% endif %}>
+    <h2>{{ header }}</h2>
+    <table class="table table-condensed">
+        <thead>
+        <tr>
+            {% for colname in colnames %}
+            <th>{{ colname }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in rows %}
+        <tr
+            {% if row[
+        "trusted_user"] == True or row["trusted_app"] == True or row["damaged_now"] == False %}
+        class="success"
+        {% else %}
+        class="danger"
+        {% endif %}>
         {% for colname in colnames %}
-          {% if colname == "osm_user" %}
-          <td><a href="http://osm.org/user/{{ row[colname] }}">{{ row[colname]}}</a></td>
-          {% endif %}
-          {% if colname == "osm_id" %}
-          <td><a href="http://osm.org/browse/{{ row['type'] }}/{{ row['osm_id'] }}">{{ row[colname]}}</a></td>
-          {% endif %}
-          {% if colname == "osm_changeset" %}
-          <td>
-            <a href="http://osm.org/changeset/{{ row[colname] }}">{{ row[colname]}}</a><br />
+        {% if colname == "osm_user" %}
+        <td><a href="http://osm.org/user/{{ row[colname] }}">{{ row[colname]}}</a></td>
+        {% endif %}
+        {% if colname == "osm_id" %}
+        <td><a href="http://osm.org/browse/{{ row['type'] }}/{{ row['osm_id'] }}">{{ row[colname]}}</a></td>
+        {% endif %}
+        {% if colname == "osm_changeset" %}
+        <td>
+            <a href="http://osm.org/changeset/{{ row[colname] }}">{{ row[colname]}}</a><br/>
             <a href="./changeset/{{ row[colname] }}">((RAPORT))</a>
-          </td>
-          {% endif %}
-          {% if colname == "reason" %}
-          <td>
-              <h4>
-                  {{ reason_dict[row[colname]]["short"] }} <br />
-                  <small>{{ reason_dict[row[colname]]["full"] }}</small>
-              </h4>
-          </td>
-          {% endif %}
-          {% if colname == "checks" %}
-          <td>
+        </td>
+        {% endif %}
+        {% if colname == "reason" %}
+        <td>
+            <h4>
+                {{ reason_dict[row[colname]]["short"] }} <br/>
+                <small>{{ reason_dict[row[colname]]["full"] }}</small>
+            </h4>
+        </td>
+        {% endif %}
+        {% if colname == "checks" %}
+        <td>
             {% if row["trusted_user"] == True %}
-                <p class="text-success">Użytkownik znajduje się na liście zaufanych</p>
+            <p class="text-success">Użytkownik znajduje się na liście zaufanych</p>
             {% else %}
-                <p class="text-danger">Użytkownik nie znajduje się na liście zaufanych</p>
+            <p class="text-danger">Użytkownik nie znajduje się na liście zaufanych</p>
             {% endif %}
             {% if row["trusted_app"] == True %}
-                <p class="text-success">Aplikacja {{ row["app"] }} znajduje się na liście zaufanych</p>
+            <p class="text-success">Aplikacja {{ row["app"] }} znajduje się na liście zaufanych</p>
             {% else %}
-                <p class="text-danger">Aplikacja {{ row["app"] }} nie znajduje się na liście zaufanych</p>
+            <p class="text-danger">Aplikacja {{ row["app"] }} nie znajduje się na liście zaufanych</p>
             {% endif %}
             {% if row["damaged_now"] == True %}
-                <p class="text-danger">Uszkodzenie powstało w tym changesecie</p>
+            <p class="text-danger">Uszkodzenie powstało w tym changesecie</p>
             {% else %}
-                <p class="text-success">Uszkodzenie nie powstało w tym changesecie</p>
+            <p class="text-success">Uszkodzenie nie powstało w tym changesecie</p>
             {% endif %}
 
-          </td>
-          {% endif %}
+        </td>
+        {% endif %}
+        {% if colname == "visits" %}
+        <td>{{ row[colname]}}</td>
+        {% endif %}
         {% endfor %}
 
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
 </body>
 </html>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import locdb
 import config
 app = Flask(__name__)
@@ -21,7 +21,7 @@ def create_josm_list(rep):
 def main_list():
     htdata = locdb.select_all(limit=100)
     header = "Ostatnie 100 changesetów z uszkodzonymi adresami"
-    colnames = ["osm_id", "osm_user", "osm_changeset", "reason", "checks"]
+    colnames = ["osm_id", "osm_user", "osm_changeset", "visits", "reason", "checks"]
     rows = htdata
 
     return render_template("main.html",
@@ -33,6 +33,9 @@ def main_list():
 
 @app.route('/changeset/<chgs_id>')
 def changeset_report(chgs_id):
+    referer = request.headers.get("Referer")
+    locdb.add_visit(chgs_id,referer)
+    visits = locdb.select_visits_grouped(chgs_id)
     htdata = locdb.select_changeset(chgs_id)
     colnames = ["osm_id", "reason", "checks"]
     all_obj = create_josm_list(htdata)
@@ -40,10 +43,11 @@ def changeset_report(chgs_id):
                            rows=htdata,
                            colnames=colnames,
                            reason_dict=config.reason_dict,
-                           all_obj=all_obj)
+                           all_obj=all_obj,
+                           visits=visits)
 
 
 
 
 if __name__ == "__main__":
-    app.run(host="10.0.3.10", port="5000")
+    app.run(host="127.0.0.1", port="5000")
